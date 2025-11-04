@@ -1,5 +1,18 @@
 MIGTOOL CHANGE-LOG
 ===================
+1.8.1 - 1 Sep 2025
+- Upgrade PostgreSQL dependency to non-vulnerable version (#55) [b1f6323]
+
+1.8.0 - 27 Feb 2025
+- Upgrade MySQL connector dependency to 9.2.0 (compatible with MySQL 8.x only) and H2 dependency to 2.2.224 (#53) [ff1469f]
+
+1.7.0 - 5 Feb 2025
+- Bump Groovy runtime to version 4
+
+1.6.0 - 18 Sep 2024
+- Implement a simple sql template to support PostgreSQL (#49) [8d518b7]
+- Bump test containers 1.20.1 + Mysql 8.0 [b654e70]
+
 1.5.1 - 29 Jul 2024
 - Bump sqlite to version 3.42.0.0 (#47) [4725b896]
 - Bump foojey resolver to settings [137f380f]

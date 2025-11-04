@@ -1,24 +1,21 @@
 package io.seqera.migtool
 
-import java.sql.SQLIntegrityConstraintViolationException
-
-import org.testcontainers.containers.MySQLContainer
-
+import org.postgresql.util.PSQLException
+import org.testcontainers.containers.PostgreSQLContainer
 import spock.lang.Specification
-
 /**
  *
  * @author Paolo Di Tommaso <paolo.ditommaso@gmail.com>
  */
-class MysqlTest extends Specification {
+class PostgreSqlTest extends Specification {
 
     private static final int PORT = 3306
 
 
-    static MySQLContainer container
+    static PostgreSQLContainer container
 
     static {
-        container = new MySQLContainer("mysql:8.0")
+        container = new PostgreSQLContainer("postgres:16-alpine")
         // start it -- note: it's stopped automatically
         // https://www.testcontainers.org/test_framework_integration/manual_lifecycle_control/
         container.start()
@@ -27,12 +24,12 @@ class MysqlTest extends Specification {
     def 'should do something'  () {
         given:
         def tool = new MigTool()
-                .withDriver('com.mysql.cj.jdbc.Driver')
-                .withDialect('mysql')
+                .withDriver('org.postgresql.Driver')
+                .withDialect('postgresql')
                 .withUrl(container.getJdbcUrl())
                 .withUser(container.getUsername())
                 .withPassword(container.getPassword())
-                .withLocations('file:src/test/resources/migrate-db/mysql')
+                .withLocations('file:src/test/resources/migrate-db/postgresql')
 
         when:
         tool.run()
@@ -47,12 +44,12 @@ class MysqlTest extends Specification {
     def 'should run a successful Groovy script' () {
         given:
         def tool = new MigTool()
-                .withDriver('com.mysql.cj.jdbc.Driver')
-                .withDialect('mysql')
+                .withDriver('org.postgresql.Driver')
+                .withDialect('postgresql')
                 .withUrl(container.getJdbcUrl())
                 .withUser(container.getUsername())
                 .withPassword(container.getPassword())
-                .withLocations('file:src/test/resources/migrate-db/mysql')
+                .withLocations('file:src/test/resources/migrate-db/postgresql')
 
         and: 'set up the initial tables'
         tool.run()
@@ -99,12 +96,12 @@ class MysqlTest extends Specification {
     def 'should run a failing Groovy script' () {
         given:
         def tool = new MigTool()
-                .withDriver('com.mysql.cj.jdbc.Driver')
-                .withDialect('mysql')
+                .withDriver('org.postgresql.Driver')
+                .withDialect('postgresql')
                 .withUrl(container.getJdbcUrl())
                 .withUser(container.getUsername())
                 .withPassword(container.getPassword())
-                .withLocations('file:src/test/resources/migrate-db/mysql')
+                .withLocations('file:src/test/resources/migrate-db/postgresql')
 
         and: 'set up the initial tables'
         tool.run()
@@ -135,7 +132,7 @@ class MysqlTest extends Specification {
         e.message.startsWith('GROOVY MIGRATION FAILED')
 
         and: 'the root cause is present and the stack trace contains the expected offending line number'
-        e.cause.class == SQLIntegrityConstraintViolationException
+        e.cause.class == PSQLException
         e.cause.stackTrace.any { t -> t.toString() ==~ /.+\.groovy:\d+.+/ }
 
         when: 'run another script to check whether the data is present'
