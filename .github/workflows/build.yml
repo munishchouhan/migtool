@@ -39,7 +39,6 @@ jobs:
 
 
       - name: Tests
-        if: ${{ !(runner.os == 'macOS' && runner.arch == 'ARM64') }}
         run: ./gradlew check
 
       - name: Tests reports
